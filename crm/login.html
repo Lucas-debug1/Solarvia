@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRM Solarvia — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-page">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-dot"></div>
+      <span>CRM — Solarvia</span>
+    </div>
+    <h2>Acesso restrito</h2>
+    <p class="login-sub">Painel exclusivo para administradores.</p>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-field">
+      <label class="login-label">Senha</label>
+      <input
+        class="login-input"
+        type="password"
+        id="input-senha"
+        placeholder="••••••••"
+        onkeydown="if(event.key==='Enter') fazerLogin()"
+      >
+    </div>
+    <button class="btn-entrar" id="btn-entrar" onclick="fazerLogin()">
+      Entrar no painel
+    </button>
+  </div>
+  <script src="login.js"></script>
+</body>
+</html>

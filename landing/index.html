@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solarvia - Energia Solar</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+<header>
+  <img src="imagens/logo.png" alt="Solarvia Logo">
+  <a href="#form" class="cta-top">Simular Economia</a>
+</header>
+<section class="hero">
+  <div class="hero-text">
+    <h1>Reduza até 95% da sua conta de luz</h1>
+    <p>Descubra em 30 segundos quanto você pode economizar com energia solar.</p>
+    <button onclick="scrollToForm()">Simular agora</button>
+    <p class="trust">+500 clientes atendidos • Economia garantida</p>
+  </div>
+</section>
+<section class="proof">
+  <h2>Quem já economiza com a Solarvia</h2>
+  <div class="proof-cards">
+    <div class="proof-card">"Minha conta caiu de R$1200 para R$110" ⭐⭐⭐⭐⭐</div>
+    <div class="proof-card">"Instalação rápida e suporte excelente" ⭐⭐⭐⭐⭐</div>
+    <div class="proof-card">"Melhor investimento que fiz" ⭐⭐⭐⭐⭐</div>
+  </div>
+</section>
+<section class="form-section" id="form">
+  <div class="form-box">
+    <h2>Simule sua economia gratuita</h2>
+    <p class="urgency">Vagas limitadas para este mês</p>
+    <form id="leadForm">
+      <input type="text"  name="nome"     placeholder="Seu nome"     required>
+      <input type="email" name="email"    placeholder="Seu email"    required>
+      <input type="tel"   name="telefone" placeholder="Seu telefone" required>
+      <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+      <button type="submit" id="btn-submit">Quero minha simulação</button>
+    </form>
+    <p class="form-feedback" id="form-feedback"></p>
+  </div>
+</section>
+<section class="benefits">
+  <div class="card">
+    <h3>Economia imediata</h3>
+    <p>Comece a economizar já no primeiro mês.</p>
+  </div>
+  <div class="card">
+    <h3>Sem dor de cabeça</h3>
+    <p>Cuidamos de todo o processo pra você.</p>
+  </div>
+  <div class="card">
+    <h3>Valorização do imóvel</h3>
+    <p>Seu imóvel mais valorizado automaticamente.</p>
+  </div>
+</section>
+<a href="https://wa.me/558140429370?text=Olá%20Fernanda,%20tenho%20interesse%20em%20um%20orçamento"
+   class="whatsapp" target="_blank">💬</a>
+<footer>
+  <p>© 2026 Solarvia - Energia Solar</p>
+</footer>
+<script src="script.js"></script>
+</body>
+</html>
