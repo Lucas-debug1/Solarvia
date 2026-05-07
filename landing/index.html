@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Solarvia - Energia Solar</title>
   <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
@@ -15,52 +15,111 @@
 </header>
 <section class="hero">
   <div class="hero-text">
-    <h1>Reduza até 95% da sua conta de luz</h1>
-    <p>Descubra em 30 segundos quanto você pode economizar com energia solar.</p>
-    <button onclick="scrollToForm()">Simular agora</button>
-    <p class="trust">+500 clientes atendidos • Economia garantida</p>
+    <div class="hero-badge">
+      <span></span> Energia solar acessível para todos
+    </div>
+    <h1>Reduza até <em>90%</em> da sua conta de luz</h1>
+    <p>Descubra em 30 segundos quanto você pode economizar com energia solar. Sem compromisso.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="scrollToForm()">Simular agora →</button>
+      <button class="btn-secondary" onclick="scrollToForm()">Saiba como funciona ↓</button>
+    </div>
+    <div class="hero-trust">
+      <div class="trust-item"><div class="trust-icon"></div> +500 clientes</div>
+      <div class="trust-item"><div class="trust-icon"></div> Economia garantida</div>
+      <div class="trust-item"><div class="trust-icon"></div> Instalação rápida</div>
+    </div>
   </div>
 </section>
 <section class="proof">
+  <div class="section-label">Depoimentos</div>
   <h2>Quem já economiza com a Solarvia</h2>
   <div class="proof-cards">
-    <div class="proof-card">"Minha conta caiu de R$1200 para R$110" ⭐⭐⭐⭐⭐</div>
-    <div class="proof-card">"Instalação rápida e suporte excelente" ⭐⭐⭐⭐⭐</div>
-    <div class="proof-card">"Melhor investimento que fiz" ⭐⭐⭐⭐⭐</div>
+    <div class="proof-card">
+      <div class="proof-stars">★★★★★</div>
+      <p class="proof-text">"Minha conta caiu de R$3.000 para R$110. Não acreditei até ver a fatura!"</p>
+      <div class="proof-autor">— Adeilda., Bonito/Pe</div>
+    </div>
+    <div class="proof-card">
+      <div class="proof-stars">★★★★★</div>
+      <p class="proof-text">"Instalação rápida, suporte excelente em 3 dias substituiram meu equipamento."</p>
+      <div class="proof-autor">— Antonio S., Bonito/Pe</div>
+    </div>
+    <div class="proof-card">
+      <div class="proof-stars">★★★★★</div>
+      <p class="proof-text">"Melhor investimento que fiz. Em 4 anos se pagou e ainda valoriza o imóvel."</p>
+      <div class="proof-autor">— Flavia., Bonito/Pe</div>
+    </div>
   </div>
 </section>
 <section class="form-section" id="form">
   <div class="form-box">
     <h2>Simule sua economia gratuita</h2>
-    <p class="urgency">Vagas limitadas para este mês</p>
+    <p class="desc">Preencha os dados e receba uma análise personalizada.</p>
+    <div class="urgency"> Vagas limitadas para este mês</div>
     <form id="leadForm">
-      <input type="text"  name="nome"     placeholder="Seu nome"     required>
-      <input type="email" name="email"    placeholder="Seu email"    required>
-      <input type="tel"   name="telefone" placeholder="Seu telefone" required>
+      <input type="text"  name="nome"     placeholder="Seu nome completo" required>
+      <input type="email" name="email"    placeholder="Seu melhor email"  required>
+      <input type="tel"   name="telefone" placeholder="Seu WhatsApp"      required>
       <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
-      <button type="submit" id="btn-submit">Quero minha simulação</button>
+      <button type="submit" class="btn-submit" id="btn-submit">Quero minha simulação gratuita →</button>
     </form>
     <p class="form-feedback" id="form-feedback"></p>
+    <p class="form-garantia"> Seus dados estão seguros. Sem spam.</p>
   </div>
 </section>
 <section class="benefits">
-  <div class="card">
-    <h3>Economia imediata</h3>
-    <p>Comece a economizar já no primeiro mês.</p>
+  <div class="section-label">
+    Benefícios
   </div>
-  <div class="card">
-    <h3>Sem dor de cabeça</h3>
-    <p>Cuidamos de todo o processo pra você.</p>
-  </div>
-  <div class="card">
-    <h3>Valorização do imóvel</h3>
-    <p>Seu imóvel mais valorizado automaticamente.</p>
+  <h2>
+    Energia solar com simplicidade, economia e eficiência
+  </h2>
+  <p class="section-description">
+    Soluções completas para reduzir sua conta de energia com instalação profissional
+    e acompanhamento especializado em todas as etapas.
+  </p>
+  <div class="benefits-grid">
+    <div class="card">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3V21M3 12H21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>Economia imediata</h3>
+      <p>
+        Reduza os custos da sua conta de energia já nos primeiros meses após a instalação.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M4 12L9 17L20 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>Processo simplificado</h3>
+      <p>
+        Cuidamos do projeto Celpe, instalação e temos bancos parceiros para que você não precise se preocupar com tempo espera muito longo em filas e muitas burocracias.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+          <path d="M3 10L12 3L21 10V20H3V10Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>Mais conforto no dia a dia</h3>
+      <p>
+        Aproveite mais liberdade e conforto, sem preocupação com altos gastos.
+      </p>
+    </div>
   </div>
 </section>
+</section>
 <a href="https://wa.me/558140429370?text=Olá%20Fernanda,%20tenho%20interesse%20em%20um%20orçamento"
-   class="whatsapp" target="_blank">💬</a>
+   class="whatsapp" target="_blank" title="Falar no WhatsApp">💬</a>
 <footer>
-  <p>© 2026 Solarvia - Energia Solar</p>
+  <p>© 2026 <span>Solarvia</span> — Energia Solar. Todos os direitos reservados.</p>
 </footer>
 <script src="script.js"></script>
 </body>

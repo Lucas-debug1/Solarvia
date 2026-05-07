@@ -1,10 +1,11 @@
-const API_URL = "http://localhost:3000";
+// 👇 Troque pela URL do backend em produção
+const API_URL = "https://SEU-BACKEND.railway.app";
 function scrollToForm() {
   document.getElementById("form").scrollIntoView({ behavior: "smooth" });
 }
-const form     = document.getElementById("leadForm");
-const btnSubmit   = document.getElementById("btn-submit");
-const feedback = document.getElementById("form-feedback");
+const form      = document.getElementById("leadForm");
+const btnSubmit = document.getElementById("btn-submit");
+const feedback  = document.getElementById("form-feedback");
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const captcha = grecaptcha.getResponse();
@@ -30,13 +31,13 @@ form.addEventListener("submit", async (e) => {
     form.reset();
     grecaptcha.reset();
   } catch (err) {
-    setFeedback("❌ " + err.message, "erro");
+    setFeedback("" + err.message, "erro");
   } finally {
     btnSubmit.disabled    = false;
     btnSubmit.textContent = "Quero minha simulação";
   }
 });
 function setFeedback(msg, tipo) {
-  feedback.textContent  = msg;
-  feedback.className    = "form-feedback " + tipo;
+  feedback.textContent = msg;
+  feedback.className   = "form-feedback " + tipo;
 }

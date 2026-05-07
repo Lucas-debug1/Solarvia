@@ -1,4 +1,5 @@
-const API_URL  = "http://localhost:3000";
+// 👇 Troque pela URL do backend em produção
+const API_URL  = "https://SEU-BACKEND.railway.app";
 const DATE_COL = "criado_em";
 const token = localStorage.getItem("crm_token");
 if (!token) window.location.href = "login.html";
@@ -33,7 +34,7 @@ function showToast(msg) {
 }
 function showError(msg) {
   const el = document.getElementById("error-bar");
-  el.textContent  = msg;
+  el.textContent   = msg;
   el.style.display = "block";
 }
 function hideError() {
@@ -47,7 +48,7 @@ function setLiveBadge(state) {
     connecting: "background:rgba(247,201,79,0.12);color:#f7c94f;border:1px solid rgba(247,201,79,0.25);",
   };
   const labels = { ok: "● CONECTADO", err: "● ERRO", connecting: "● CONECTANDO" };
-  el.textContent = labels[state];
+  el.textContent   = labels[state] || labels.connecting;
   el.style.cssText = (styles[state] || styles.connecting) +
     "border-radius:20px;padding:3px 10px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.5px;";
 }
@@ -70,19 +71,21 @@ async function loadLeads() {
     setLiveBadge("err");
     showError("Erro ao carregar leads: " + e.message);
     document.getElementById("leads-tbody").innerHTML =
-      '<tr class="loading-row"><td colspan="6">Falha ao carregar. Verifique se o servidor está rodando.</td></tr>';
+      '<tr class="loading-row"><td colspan="6">Falha ao carregar.</td></tr>';
   }
 }
 function updateMetrics() {
   const counts = { novo: 0, andamento: 0, convertido: 0, perdido: 0 };
-  allLeads.forEach(l => { counts[l.status || "novo"]++; });
-
+  allLeads.forEach(l => {
+    const st = (l.status || "novo").trim().toLowerCase();
+    if (counts[st] !== undefined) counts[st]++;
+    else counts.novo++;
+  });
   document.getElementById("m-total").textContent      = allLeads.length;
   document.getElementById("m-novo").textContent       = counts.novo;
   document.getElementById("m-andamento").textContent  = counts.andamento;
   document.getElementById("m-convertido").textContent = counts.convertido;
   document.getElementById("m-perdido").textContent    = counts.perdido;
-
   const taxa = allLeads.length > 0
     ? Math.round((counts.convertido / allLeads.length) * 100)
     : 0;
@@ -91,7 +94,6 @@ function updateMetrics() {
 function renderDailyChart() {
   const now = new Date();
   const days = [], counts = [];
-
   for (let i = 6; i >= 0; i--) {
     const d  = new Date(now - i * 864e5);
     const ds = d.toISOString().slice(0, 10);
@@ -103,17 +105,10 @@ function renderDailyChart() {
     type: "bar",
     data: {
       labels: days,
-      datasets: [{
-        data: counts,
-        backgroundColor: "rgba(79,142,247,0.25)",
-        borderColor: "#4f8ef7",
-        borderWidth: 1.5,
-        borderRadius: 4,
-      }],
+      datasets: [{ data: counts, backgroundColor: "rgba(79,142,247,0.25)", borderColor: "#4f8ef7", borderWidth: 1.5, borderRadius: 4 }],
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
+      responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
         x: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { color: "#4a5568", font: { size: 10 } } },
@@ -124,7 +119,11 @@ function renderDailyChart() {
 }
 function renderStatusChart() {
   const counts = { novo: 0, andamento: 0, convertido: 0, perdido: 0 };
-  allLeads.forEach(l => { counts[l.status || "novo"]++; });
+  allLeads.forEach(l => {
+    const st = (l.status || "novo").trim().toLowerCase();
+    if (counts[st] !== undefined) counts[st]++;
+    else counts.novo++;
+  });
   const keys   = Object.keys(STATUS_CONFIG);
   const data   = keys.map(k => counts[k]);
   const colors = keys.map(k => STATUS_CONFIG[k].color);
@@ -137,9 +136,7 @@ function renderStatusChart() {
       datasets: [{ data, backgroundColor: colors.map(c => c + "33"), borderColor: colors, borderWidth: 2 }],
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: "68%",
+      responsive: true, maintainAspectRatio: false, cutout: "68%",
       plugins: {
         legend: { display: false },
         tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw}` } },
@@ -152,8 +149,7 @@ function renderStatusChart() {
         <span style="width:10px;height:10px;border-radius:2px;background:${STATUS_CONFIG[k].color};flex-shrink:0;"></span>
         <span>${STATUS_CONFIG[k].label} <strong style="color:#c8d0de;">${counts[k]}</strong></span>
       </div>
-    `)
-    .join("");
+    `).join("");
 }
 function getInitials(name) {
   if (!name) return "?";
@@ -173,7 +169,8 @@ function filterLeads() {
     const matchQ = (l.nome || "").toLowerCase().includes(q)
       || (l.email || "").toLowerCase().includes(q)
       || (l.telefone || "").toLowerCase().includes(q);
-    const matchS = !sf || (l.status || "novo") === sf;
+    const st     = (l.status || "novo").trim().toLowerCase();
+    const matchS = !sf || st === sf;
     return matchQ && matchS;
   });
   page = 0;
@@ -193,41 +190,50 @@ async function changeStatus(leadId, value) {
     });
     if (res.status === 401) { sair(); return; }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const lead = allLeads.find(x => x.id === leadId);
+    const lead = allLeads.find(x => String(x.id) === String(leadId));
     if (lead) lead.status = value;
     updateMetrics();
     renderStatusChart();
     filterLeads();
-    showToast("✅ Status atualizado: " + STATUS_CONFIG[value].label);
+    showToast("Status: " + STATUS_CONFIG[value].label);
   } catch (err) {
     showError("Erro ao atualizar status: " + err.message);
   }
 }
 function confirmarDelete(leadId) {
-  deleteId = leadId;
+  if (!leadId || leadId === "null" || leadId === "undefined") {
+    showError("ID inválido.");
+    return;
+  }
+  deleteId = String(leadId);
   document.getElementById("modal-delete").style.display = "flex";
-  document.getElementById("btn-confirmar-delete").onclick = executarDelete;
 }
 function fecharModal() {
-  deleteId = null;
   document.getElementById("modal-delete").style.display = "none";
 }
 async function executarDelete() {
+  const idParaDeletar = deleteId;
   fecharModal();
+  deleteId = null;
+  if (!idParaDeletar || idParaDeletar === "null") {
+    showError("ID inválido.");
+    return;
+  }
   try {
-    const res = await fetch(`${API_URL}/leads/${deleteId}`, {
+    const res = await fetch(`${API_URL}/leads/${idParaDeletar}`, {
       method: "DELETE",
       headers: authHeaders(),
     });
     if (res.status === 401) { sair(); return; }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    allLeads = allLeads.filter(l => l.id !== deleteId);
+
+    allLeads = allLeads.filter(l => String(l.id) !== String(idParaDeletar));
     updateMetrics();
     renderStatusChart();
     filterLeads();
     showToast("🗑️ Lead removido.");
   } catch (err) {
-    showError("Erro ao remover lead: " + err.message);
+    showError("Erro ao remover: " + err.message);
   }
 }
 function renderTable() {
@@ -236,40 +242,66 @@ function renderTable() {
   const slice   = filtered.slice(start, start + PER_PAGE);
   const total   = filtered.length;
   const maxPage = Math.ceil(total / PER_PAGE);
+  tbody.innerHTML = "";
   if (slice.length === 0) {
-    tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Nenhum lead encontrado.</td></tr>';
+    const tr = document.createElement("tr");
+    tr.className = "loading-row";
+    tr.innerHTML = '<td colspan="6">Nenhum lead encontrado.</td>';
+    tbody.appendChild(tr);
     document.getElementById("pagination").style.display = "none";
     return;
   }
-  tbody.innerHTML = slice.map(l => {
-    const st  = l.status || "novo";
-    const cfg = STATUS_CONFIG[st];
-    const opts = Object.keys(STATUS_CONFIG)
-      .map(k => `<option value="${k}" ${k === st ? "selected" : ""}>${STATUS_CONFIG[k].label}</option>`)
-      .join("");
-    return `
-      <tr>
-        <td>
-          <div class="name-cell">
-            <div class="avatar">${getInitials(l.nome)}</div>
-            <span class="lead-name">${l.nome || "—"}</span>
-          </div>
-        </td>
-        <td><a class="email-link" href="mailto:${l.email || ""}">${l.email || "—"}</a></td>
-        <td><span class="phone-text">${l.telefone || "—"}</span></td>
-        <td><span class="date-text">${formatDate(l[DATE_COL])}</span></td>
-        <td>
-          <select
-            class="status-select ${cfg.cls}"
-            onchange="changeStatus(${l.id}, this.value); this.className='status-select status-'+this.value;"
-          >${opts}</select>
-        </td>
-        <td>
-          <button class="btn-delete" onclick="confirmarDelete(${l.id})" title="Remover lead">🗑</button>
-        </td>
-      </tr>
-    `;
-  }).join("");
+  slice.forEach(l => {
+    const st  = (l.status || "novo").trim().toLowerCase();
+    const cfg = STATUS_CONFIG[st] || STATUS_CONFIG.novo;
+    const tr  = document.createElement("tr");
+    const tdNome = document.createElement("td");
+    tdNome.innerHTML = `
+      <div class="name-cell">
+        <div class="avatar">${getInitials(l.nome)}</div>
+        <span class="lead-name">${l.nome || "—"}</span>
+      </div>`;
+    const tdEmail = document.createElement("td");
+    const a = document.createElement("a");
+    a.className   = "email-link";
+    a.href        = `mailto:${l.email || ""}`;
+    a.textContent = l.email || "—";
+    tdEmail.appendChild(a);
+    const tdTel = document.createElement("td");
+    tdTel.innerHTML = `<span class="phone-text">${l.telefone || "—"}</span>`;
+    const tdData = document.createElement("td");
+    tdData.innerHTML = `<span class="date-text">${formatDate(l[DATE_COL])}</span>`;
+    const tdStatus = document.createElement("td");
+    const select   = document.createElement("select");
+    select.className = `status-select ${cfg.cls}`;
+    Object.keys(STATUS_CONFIG).forEach(k => {
+      const opt = document.createElement("option");
+      opt.value       = k;
+      opt.textContent = STATUS_CONFIG[k].label;
+      if (k === st) opt.selected = true;
+      select.appendChild(opt);
+    });
+    select.addEventListener("change", function () {
+      const novoStatus = this.value;
+      this.className = `status-select status-${novoStatus}`;
+      changeStatus(l.id, novoStatus);
+    });
+    tdStatus.appendChild(select);
+    const tdAcoes = document.createElement("td");
+    const btnDel  = document.createElement("button");
+    btnDel.className   = "btn-delete";
+    btnDel.title       = "Remover lead";
+    btnDel.textContent = "🗑";
+    btnDel.addEventListener("click", () => confirmarDelete(String(l.id)));
+    tdAcoes.appendChild(btnDel);
+    tr.appendChild(tdNome);
+    tr.appendChild(tdEmail);
+    tr.appendChild(tdTel);
+    tr.appendChild(tdData);
+    tr.appendChild(tdStatus);
+    tr.appendChild(tdAcoes);
+    tbody.appendChild(tr);
+  });
   document.getElementById("pagination").style.display = "flex";
   document.getElementById("page-info").textContent =
     `${start + 1}–${Math.min(start + PER_PAGE, total)} de ${total}`;
