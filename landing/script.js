@@ -1,5 +1,4 @@
-// 👇 Troque pela URL do backend em produção
-const API_URL = "https://SEU-BACKEND.railway.app";
+const API_URL = "https://crmsolarvia.vercel.app";
 function scrollToForm() {
   document.getElementById("form").scrollIntoView({ behavior: "smooth" });
 }

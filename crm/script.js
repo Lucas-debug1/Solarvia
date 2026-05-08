@@ -1,5 +1,4 @@
-// 👇 Troque pela URL do backend em produção
-const API_URL  = "https://SEU-BACKEND.railway.app";
+const API_URL  = "https://crmsolarvia.vercel.app";
 const DATE_COL = "criado_em";
 const token = localStorage.getItem("crm_token");
 if (!token) window.location.href = "login.html";
