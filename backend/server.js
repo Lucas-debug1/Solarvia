@@ -6,7 +6,6 @@ const rateLimit        = require("express-rate-limit");
 const { createClient } = require("@supabase/supabase-js");
 
 const app  = express();
-const PORT = process.env.PORT || 3000;
 
 // ── Supabase ──────────────────────────────────────
 const supabase = createClient(
