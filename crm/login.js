@@ -1,4 +1,4 @@
-const API_URL = "https://crmsolarvia.vercel.app";
+const API_URL = "https://solarvia-production.up.railway.app";
 if (localStorage.getItem("crm_token")) {
   window.location.href = "index.html";
 }

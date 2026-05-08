@@ -1,4 +1,4 @@
-const API_URL  = "https://crmsolarvia.vercel.app";
+const API_URL  = "https://solarvia-production.up.railway.app";
 const DATE_COL = "criado_em";
 const token = localStorage.getItem("crm_token");
 if (!token) window.location.href = "login.html";

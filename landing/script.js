@@ -1,4 +1,4 @@
-const API_URL = "https://crmsolarvia.vercel.app";
+const API_URL = "https://solarvia-production.up.railway.app";
 function scrollToForm() {
   document.getElementById("form").scrollIntoView({ behavior: "smooth" });
 }
