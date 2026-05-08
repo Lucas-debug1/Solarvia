@@ -11,22 +11,27 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
 );
-const origensPermitidas = [
-  process.env.LANDING_URL, // ex: https://solarvia.com.br
-  process.env.CRM_URL,     // ex: https://crm.solarvia.com.br
-  "http://localhost:5500",  // desenvolvimento local landing
-  "http://localhost:5501",  // desenvolvimento local crm
-  "http://127.0.0.1:5500",
-  "http://127.0.0.1:5501",
-].filter(Boolean);
 app.use(cors({
   origin: function (origin, callback) {
+    const origensPermitidas = [
+      process.env.LANDING_URL,
+      process.env.CRM_URL,
+      "http://localhost:5500",
+      "http://localhost:5501",
+      "http://127.0.0.1:5500",
+      "http://127.0.0.1:5501",
+    ].filter(Boolean);
     if (!origin) return callback(null, true);
-    if (origensPermitidas.includes(origin)) return callback(null, true);
-    callback(new Error("Origem não permitida pelo CORS"));
+    if (origensPermitidas.includes(origin)) {
+      return callback(null, true);
+    }
+    console.log("CORS bloqueou origem:", origin);
+    console.log("Origens permitidas:", origensPermitidas);
+    return callback(null, false);
   },
   credentials: true,
 }));
+app.options("*", cors());
 app.use(express.json({ limit: "10kb" }));
 const loginLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutos
