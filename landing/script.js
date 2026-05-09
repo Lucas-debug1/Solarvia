@@ -22,7 +22,12 @@ form.addEventListener("submit", async (e) => {
     const res = await fetch(`${API_URL}/leads`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, email, telefone }),
+      body: JSON.stringify({
+        nome,
+        email,
+        telefone,
+        captcha, // token enviado ao backend para verificação
+      }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Erro ao enviar.");
@@ -30,10 +35,10 @@ form.addEventListener("submit", async (e) => {
     form.reset();
     grecaptcha.reset();
   } catch (err) {
-    setFeedback("" + err.message, "erro");
+    setFeedback("X" + err.message, "erro");
   } finally {
     btnSubmit.disabled    = false;
-    btnSubmit.textContent = "Quero minha simulação";
+    btnSubmit.textContent = "Quero minha simulação gratuita →";
   }
 });
 function setFeedback(msg, tipo) {

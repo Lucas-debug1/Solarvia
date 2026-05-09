@@ -1,15 +1,28 @@
 const API_URL  = "https://solarvia-production.up.railway.app";
 const DATE_COL = "criado_em";
-const token = localStorage.getItem("crm_token");
-if (!token) window.location.href = "login.html";
-function authHeaders() {
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
+async function verificarSessao() {
+  try {
+    const res = await fetch(`${API_URL}/auth/me`, {
+      credentials: "include",
+    });
+    if (!res.ok) {
+      window.location.href = "login.html";
+    }
+  } catch {
+    window.location.href = "login.html";
+  }
 }
-function sair() {
-  localStorage.removeItem("crm_token");
+function reqOpts(method = "GET", body = null) {
+  const opts = {
+    method,
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+  };
+  if (body) opts.body = JSON.stringify(body);
+  return opts;
+}
+async function sair() {
+  await fetch(`${API_URL}/auth/logout`, reqOpts("POST"));
   window.location.href = "login.html";
 }
 let allLeads   = [];
@@ -57,8 +70,8 @@ async function loadLeads() {
   document.getElementById("leads-tbody").innerHTML =
     '<tr class="loading-row"><td colspan="6">Carregando leads...</td></tr>';
   try {
-    const res = await fetch(`${API_URL}/leads`, { headers: authHeaders() });
-    if (res.status === 401) { sair(); return; }
+    const res = await fetch(`${API_URL}/leads`, reqOpts("GET"));
+    if (res.status === 401) { window.location.href = "login.html"; return; }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     allLeads = await res.json();
     setLiveBadge("ok");
@@ -182,12 +195,8 @@ function changePage(dir) {
 }
 async function changeStatus(leadId, value) {
   try {
-    const res = await fetch(`${API_URL}/leads/${leadId}`, {
-      method: "PUT",
-      headers: authHeaders(),
-      body: JSON.stringify({ status: value }),
-    });
-    if (res.status === 401) { sair(); return; }
+    const res = await fetch(`${API_URL}/leads/${leadId}`, reqOpts("PUT", { status: value }));
+    if (res.status === 401) { window.location.href = "login.html"; return; }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const lead = allLeads.find(x => String(x.id) === String(leadId));
     if (lead) lead.status = value;
@@ -219,13 +228,9 @@ async function executarDelete() {
     return;
   }
   try {
-    const res = await fetch(`${API_URL}/leads/${idParaDeletar}`, {
-      method: "DELETE",
-      headers: authHeaders(),
-    });
-    if (res.status === 401) { sair(); return; }
+    const res = await fetch(`${API_URL}/leads/${idParaDeletar}`, reqOpts("DELETE"));
+    if (res.status === 401) { window.location.href = "login.html"; return; }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
     allLeads = allLeads.filter(l => String(l.id) !== String(idParaDeletar));
     updateMetrics();
     renderStatusChart();
@@ -281,9 +286,8 @@ function renderTable() {
       select.appendChild(opt);
     });
     select.addEventListener("change", function () {
-      const novoStatus = this.value;
-      this.className = `status-select status-${novoStatus}`;
-      changeStatus(l.id, novoStatus);
+      this.className = `status-select status-${this.value}`;
+      changeStatus(l.id, this.value);
     });
     tdStatus.appendChild(select);
     const tdAcoes = document.createElement("td");
@@ -307,4 +311,4 @@ function renderTable() {
   document.getElementById("btn-prev").disabled = page === 0;
   document.getElementById("btn-next").disabled = page >= maxPage - 1;
 }
-loadLeads();
+verificarSessao().then(() => loadLeads());

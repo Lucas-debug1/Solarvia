@@ -3,6 +3,7 @@ const express          = require("express");
 const jwt              = require("jsonwebtoken");
 const bcrypt           = require("bcryptjs");
 const rateLimit        = require("express-rate-limit");
+const cookieParser     = require("cookie-parser");
 const { createClient } = require("@supabase/supabase-js");
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -23,16 +24,14 @@ app.use((req, res, next) => {
   if (!origin || origensPermitidas.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin || "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
     res.setHeader("Access-Control-Allow-Credentials", "true");
   }
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(204);
-  }
-
+  if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
 app.use(express.json({ limit: "10kb" }));
+app.use(cookieParser());
 const loginLimiter = rateLimit({
   windowMs: 5 * 60 * 1000,
   max: 10,
@@ -46,16 +45,16 @@ const leadsLimiter = rateLimit({
   message: { error: "Muitas requisições. Tente novamente em breve." },
 });
 function authGuard(req, res, next) {
-  const header = req.headers.authorization;
-  if (!header || !header.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Token não fornecido." });
+  const token = req.cookies?.crm_token;
+  if (!token) {
+    return res.status(401).json({ error: "Não autenticado." });
   }
-  const token = header.split(" ")[1];
   try {
     req.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
   } catch {
-    res.status(401).json({ error: "Token inválido ou expirado." });
+    res.clearCookie("crm_token");
+    res.status(401).json({ error: "Sessão expirada. Faça login novamente." });
   }
 }
 function validarEmail(email) {
@@ -67,6 +66,20 @@ function validarTelefone(tel) {
 function sanitizar(str) {
   if (typeof str !== "string") return "";
   return str.trim().slice(0, 200);
+}
+async function verificarRecaptcha(token) {
+  if (!token) return false;
+  try {
+    const res = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `secret=${process.env.RECAPTCHA_SECRET}&response=${token}`,
+    });
+    const data = await res.json();
+    return data.success === true;
+  } catch {
+    return false;
+  }
 }
 app.get("/", (req, res) => res.json({ status: "API Solarvia ok" }));
 app.post("/auth/login", loginLimiter, async (req, res) => {
@@ -83,12 +96,30 @@ app.post("/auth/login", loginLimiter, async (req, res) => {
     process.env.JWT_SECRET,
     { expiresIn: "8h" }
   );
-  res.json({ token });
+  res.cookie("crm_token", token, {
+    httpOnly: true,                         
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",                        
+    maxAge: 8 * 60 * 60 * 1000,
+  });
+  res.json({ ok: true });
+});
+app.post("/auth/logout", (req, res) => {
+  res.clearCookie("crm_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+  });
+  res.json({ ok: true });
+});
+app.get("/auth/me", authGuard, (req, res) => {
+  res.json({ ok: true, role: req.user.role });
 });
 app.post("/leads", leadsLimiter, async (req, res) => {
-  const nome     = sanitizar(req.body.nome);
-  const email    = sanitizar(req.body.email);
-  const telefone = sanitizar(req.body.telefone);
+  const nome      = sanitizar(req.body.nome);
+  const email     = sanitizar(req.body.email);
+  const telefone  = sanitizar(req.body.telefone);
+  const captcha   = req.body.captcha;
   if (!nome || !email || !telefone) {
     return res.status(400).json({ error: "Campos obrigatórios: nome, email, telefone." });
   }
@@ -97,6 +128,10 @@ app.post("/leads", leadsLimiter, async (req, res) => {
   }
   if (!validarTelefone(telefone)) {
     return res.status(400).json({ error: "Telefone inválido (mínimo 10 dígitos)." });
+  }
+  const captchaValido = await verificarRecaptcha(captcha);
+  if (!captchaValido) {
+    return res.status(400).json({ error: "Verificação anti-bot falhou. Tente novamente." });
   }
   const { error } = await supabase
     .from("leads")
@@ -119,7 +154,6 @@ app.put("/leads/:id", authGuard, async (req, res) => {
   if (!statusValidos.includes(status)) {
     return res.status(400).json({ error: "Status inválido." });
   }
-
   if (!id || id === "null") {
     return res.status(400).json({ error: "ID inválido." });
   }
@@ -144,5 +178,5 @@ app.delete("/leads/:id", authGuard, async (req, res) => {
   res.json({ message: "Lead removido!" });
 });
 app.listen(PORT, () => {
-  console.log(`\n🚀 Servidor Solarvia rodando na porta ${PORT}\n`);
+  console.log(`\nServidor Solarvia rodando na porta ${PORT}\n`);
 });

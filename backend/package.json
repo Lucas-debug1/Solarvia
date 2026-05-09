@@ -1,7 +1,7 @@
 {
   "name": "solarvia-backend",
   "version": "1.0.0",
-  "description": "API backend da Solarvia — leads + autenticação JWT",
+  "description": "API backend da Solarvia",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,7 +10,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.105.1",
     "bcryptjs": "^2.4.3",
-    "cors": "^2.8.6",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^17.4.2",
     "express": "^4.18.2",
     "express-rate-limit": "^7.4.0",
