@@ -401,12 +401,7 @@ footer {
   font-size: 0.85rem;
 }
 footer span { color: var(--verde-light); }
-
-/* ════════════════════════════════════════
-   RESPONSIVO MOBILE
-════════════════════════════════════════ */
 @media (max-width: 768px) {
-  /* Header */
   header {
     padding: 0 4%;
     height: 70px;
@@ -416,8 +411,6 @@ footer span { color: var(--verde-light); }
     padding: 9px 16px;
     font-size: 0.82rem;
   }
-
-  /* Hero */
   .hero {
     padding: 44px 5%;
     min-height: auto;
@@ -433,12 +426,8 @@ footer span { color: var(--verde-light); }
   .btn-primary { max-width: 100%; text-align: center; }
   .hero-trust { gap: 10px; }
   .trust-item { font-size: 0.8rem; }
-
-  /* Proof */
   .proof { padding: 48px 5%; }
   .proof-cards { grid-template-columns: 1fr; }
-
-  /* Form */
   .form-section { padding: 48px 5%; }
   .form-box {
     padding: 28px 18px;
@@ -446,15 +435,10 @@ footer span { color: var(--verde-light); }
   }
   .form-box h2 { font-size: 1.35rem; }
   .g-recaptcha { transform: scale(0.88); transform-origin: center; }
-
-  /* Benefits */
   .benefits { padding: 48px 5%; }
   .benefits-grid { grid-template-columns: 1fr; }
-
-  /* WhatsApp */
   .whatsapp { bottom: 16px; right: 16px; width: 48px; height: 48px; font-size: 22px; }
 }
-
 @media (max-width: 400px) {
   header img { height: 80px; }
   .cta-top { padding: 8px 12px; font-size: 0.78rem; }
