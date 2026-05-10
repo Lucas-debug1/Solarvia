@@ -93,8 +93,6 @@ body.login-page {
 }
 .btn-entrar:hover    { opacity: 0.88; }
 .btn-entrar:disabled { opacity: 0.4; cursor: not-allowed; }
-
-/* ── Topbar ── */
 .topbar {
   background: #131a10;
   border-bottom: 1px solid #1e2e14;
@@ -152,8 +150,6 @@ body.login-page {
 .btn-top:hover { background: #1f2e18; color: #a8cc70; }
 .btn-logout { color: #e07060; border-color: rgba(220,80,60,0.2); }
 .btn-logout:hover { background: rgba(220,80,60,0.08); color: #e07060; }
-
-/* ── Content ── */
 .content { padding: 20px; }
 .error-bar {
   background: rgba(220,80,60,0.1);
@@ -165,8 +161,6 @@ body.login-page {
   margin-bottom: 16px;
   display: none;
 }
-
-/* ── Metrics ── */
 .metrics-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -209,8 +203,6 @@ body.login-page {
   line-height: 1;
 }
 .metric-sub { font-size: 10px; color: #3a4e2c; margin-top: 4px; }
-
-/* ── Charts ── */
 .charts-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -235,8 +227,6 @@ body.login-page {
   line-height: 2;
   font-family: 'DM Mono', monospace;
 }
-
-/* ── Table ── */
 .table-card {
   background: #131a10;
   border: 1px solid #1e2e14;
@@ -295,8 +285,6 @@ body.login-page {
   font-size: 12px;
   pointer-events: none;
 }
-
-/* Tabela com scroll horizontal no mobile */
 .table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -487,50 +475,32 @@ tbody td { padding: 10px 12px; font-size: 12px; color: #90a870; vertical-align: 
   transition: background 0.15s;
 }
 .btn-confirmar:hover { background: #c85848; }
-
-/* ════════════════════════════════════════
-   RESPONSIVO MOBILE
-════════════════════════════════════════ */
 @media (max-width: 768px) {
   .content { padding: 12px; }
-
-  /* Métricas — 2 colunas no mobile */
   .metrics-row {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
   .metric-value { font-size: 20px; }
-
-  /* Gráficos — coluna única */
   .charts-row { grid-template-columns: 1fr; gap: 10px; }
-
-  /* Gráfico de status — compacto */
   .chart-card div[style*="display:flex"] {
     flex-direction: column;
     align-items: center;
     height: auto !important;
   }
-
-  /* Tabela com scroll horizontal */
   .table-card { overflow-x: auto; }
   table { min-width: 480px; }
-
-  /* Header/filtros da tabela */
   .table-header { flex-direction: column; align-items: flex-start; }
   .table-header-right { width: 100%; justify-content: space-between; }
   .filter-select { flex: 1; max-width: none; }
   .search-input { width: 100%; flex: 1; }
   .search-wrap { flex: 1; }
 }
-
 @media (max-width: 480px) {
-  /* Métricas — ainda 2 colunas mas menores */
   .metric-card { padding: 12px 10px; }
   .metric-value { font-size: 18px; }
   .metric-label { font-size: 8px; }
-
-  /* Topbar compacto */
   .topbar h1 { font-size: 13px; }
-  .badge-live { display: none; } /* esconde no mobile muito pequeno */
+  .badge-live { display: none; }
   .btn-top { padding: 5px 10px; font-size: 11px; }
 }
