@@ -2,7 +2,7 @@ const API_URL = "https://solarvia-production.up.railway.app";
 async function verificarSessao() {
   try {
     const res = await fetch(`${API_URL}/auth/me`, {
-      credentials: "include", // envia o cookie automaticamente
+      credentials: "include",
     });
     if (res.ok) {
       window.location.href = "index.html";
@@ -27,7 +27,7 @@ async function fazerLogin() {
     const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include", // recebe e salva o cookie automaticamente
+      credentials: "include",
       body: JSON.stringify({ senha }),
     });
     const data = await res.json();

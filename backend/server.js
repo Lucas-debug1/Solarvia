@@ -17,6 +17,7 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   contentSecurityPolicy: false,
 }));
+//CORS
 const ORIGENS_PERMITIDAS = [
   process.env.LANDING_URL,
   process.env.CRM_URL,
@@ -61,26 +62,15 @@ const leadsLimiter = rateLimit({
 });
 const UUID_REGEX   = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const BIGINT_REGEX = /^\d+$/;
-function validarId(id) {
-  return UUID_REGEX.test(id) || BIGINT_REGEX.test(id);
-}
-function validarEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-function validarTelefone(tel) {
-  return tel.replace(/\D/g, "").length >= 10;
-}
+function validarId(id)      { return UUID_REGEX.test(id) || BIGINT_REGEX.test(id); } //validação
+function validarEmail(email){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+function validarTelefone(tel){ return tel.replace(/\D/g, "").length >= 10; }
 function sanitizar(str) {
   if (typeof str !== "string") return "";
   return str.trim().slice(0, 200);
 }
 function log(tipo, msg, extra = {}) {
-  console.log(JSON.stringify({
-    ts: new Date().toISOString(),
-    tipo,
-    msg,
-    ...extra,
-  }));
+  console.log(JSON.stringify({ ts: new Date().toISOString(), tipo, msg, ...extra }));
 }
 async function verificarRecaptcha(token) {
   if (!token) return false;
@@ -92,9 +82,7 @@ async function verificarRecaptcha(token) {
     });
     const data = await res.json();
     return data.success === true;
-  } catch {
-    return false;
-  }
+  } catch { return false; }
 }
 function authGuard(req, res, next) {
   const origin  = req.headers.origin;
@@ -103,13 +91,11 @@ function authGuard(req, res, next) {
     || ORIGENS_PERMITIDAS.includes(origin)
     || ORIGENS_PERMITIDAS.some(o => o && referer.startsWith(o));
   if (!origemValida) {
-    log("CSRF_BLOCK", "Origem bloqueada", { origin, referer });
+    log("CSRF_BLOCK", "Origem bloqueada", { origin, referer }); //AuthGuard+CSRF 
     return res.status(403).json({ error: "Origem não autorizada." });
   }
   const token = req.cookies?.crm_token;
-  if (!token) {
-    return res.status(401).json({ error: "Não autenticado." });
-  }
+  if (!token) return res.status(401).json({ error: "Não autenticado." });
   try {
     req.user = jwt.verify(token, process.env.JWT_SECRET);
     next();
@@ -122,15 +108,19 @@ function authGuard(req, res, next) {
     res.status(401).json({ error: "Sessão expirada. Faça login novamente." });
   }
 }
-app.get("/", (req, res) => res.json({ status: "API Solarvia ok" }));
-app.post("/auth/login", loginLimiter, async (req, res) => {
+app.get("/", (req, res) => res.json({ status: "API Solarvia ok" })); //ROTAS PuB
+app.post("/auth/login", loginLimiter, async (req, res) => { //Login
   const { senha } = req.body;
   const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
   if (!senha || typeof senha !== "string" || senha.length > 200) {
     return res.status(400).json({ error: "Senha obrigatória." });
   }
-  const senhaCorreta = await bcrypt.compare(senha, process.env.ADMIN_HASH);
-  if (!senhaCorreta) {
+  const [ok1, ok2] = await Promise.all([ // Verifica as duas senhas em paralelo
+    bcrypt.compare(senha, process.env.ADMIN_HASH),
+    bcrypt.compare(senha, process.env.ADMIN_HASH_2 || ""),
+  ]);
+  if (!ok1 && !ok2) {
     log("LOGIN_FAIL", "Tentativa de login inválida", { ip });
     return res.status(401).json({ error: "Credenciais inválidas." });
   }
@@ -146,7 +136,6 @@ app.post("/auth/login", loginLimiter, async (req, res) => {
     sameSite: "none",
     maxAge: 8 * 60 * 60 * 1000,
   });
-
   res.json({ ok: true });
 });
 app.post("/auth/logout", (req, res) => {
@@ -200,30 +189,17 @@ app.get("/leads", authGuard, async (req, res) => {
 app.put("/leads/:id", authGuard, async (req, res) => {
   const { id }     = req.params;
   const { status } = req.body;
-  if (!id || !validarId(id)) {
-    return res.status(400).json({ error: "ID inválido." });
-  }
+  if (!id || !validarId(id)) return res.status(400).json({ error: "ID inválido." });
   const statusValidos = ["novo", "andamento", "convertido", "perdido"];
-  if (!statusValidos.includes(status)) {
-    return res.status(400).json({ error: "Status inválido." });
-  }
-  const { error } = await supabase
-    .from("leads")
-    .update({ status })
-    .eq("id", id);
+  if (!statusValidos.includes(status)) return res.status(400).json({ error: "Status inválido." });
+  const { error } = await supabase.from("leads").update({ status }).eq("id", id);
   if (error) return res.status(500).json({ error: "Erro ao atualizar status." });
   res.json({ message: "Status atualizado!" });
 });
 app.delete("/leads/:id", authGuard, async (req, res) => {
   const { id } = req.params;
-  if (!id || !validarId(id)) {
-    return res.status(400).json({ error: "ID inválido." });
-  }
-  const { error } = await supabase
-    .from("leads")
-    .delete()
-    .eq("id", id)
-    .select();
+  if (!id || !validarId(id)) return res.status(400).json({ error: "ID inválido." });
+  const { error } = await supabase.from("leads").delete().eq("id", id).select();
   if (error) return res.status(500).json({ error: "Erro ao remover lead." });
   log("LEAD_DELETE", "Lead removido", { id });
   res.json({ message: "Lead removido!" });
