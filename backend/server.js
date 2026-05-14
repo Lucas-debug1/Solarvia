@@ -210,3 +210,4 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   log("SERVER_START", `Servidor Solarvia rodando na porta ${PORT}`);
 });
+//querovêdaerro
