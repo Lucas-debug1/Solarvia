@@ -99,29 +99,50 @@ body.login-page {
 .btn-entrar:hover    { opacity: 0.88; }
 .btn-entrar:disabled { opacity: 0.4; cursor: not-allowed; }
 .topbar {
-  background: #131a10;
-  border-bottom: 1px solid #1e2e14;
-  padding: 12px 20px;
+  background: #101610;
+  border-bottom: 1px solid #1a2814;
+  padding: 0 24px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 1px 0 rgba(138,184,50,0.06);
 }
-.topbar-left { display: flex; align-items: center; gap: 10px; }
-.logo-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #8ab832, #4a9fd4);
-  box-shadow: 0 0 0 3px rgba(138,184,50,0.2);
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   flex-shrink: 0;
 }
-.topbar h1 {
+.topbar-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.topbar-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.topbar-brand-name {
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: -0.3px;
-  color: #e2ead8;
-  white-space: nowrap;
+  color: #c8dca0;
+  letter-spacing: -0.2px;
+  line-height: 1;
+}
+.topbar-brand-sub {
+  font-size: 10px;
+  color: #4a5e38;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  line-height: 1;
 }
 .topbar-right {
   display: flex;
@@ -482,6 +503,10 @@ tbody td { padding: 10px 12px; font-size: 12px; color: #90a870; vertical-align: 
 .btn-confirmar:hover { background: #c85848; }
 @media (max-width: 768px) {
   .content { padding: 12px; }
+  .topbar { padding: 0 16px; height: 56px; }
+  .topbar-logo { height: 32px; }
+  .topbar-brand-name { font-size: 13px; }
+  .topbar-brand-sub { display: none; }
   .metrics-row {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
@@ -505,7 +530,7 @@ tbody td { padding: 10px 12px; font-size: 12px; color: #90a870; vertical-align: 
   .metric-card { padding: 12px 10px; }
   .metric-value { font-size: 18px; }
   .metric-label { font-size: 8px; }
-  .topbar h1 { font-size: 13px; }
+  .topbar-brand-name { font-size: 12px; }
   .badge-live { display: none; }
   .btn-top { padding: 5px 10px; font-size: 11px; }
 }
